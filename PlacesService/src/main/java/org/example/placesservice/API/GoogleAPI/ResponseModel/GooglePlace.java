@@ -1,10 +1,12 @@
 package org.example.placesservice.API.GoogleAPI.ResponseModel;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import org.example.placesservice.API.Model.ApiID;
-import org.example.placesservice.API.Model.Place;
+import org.example.placesservice.API.Model.WebApiID;
+import org.example.placesservice.API.Model.WebPlace;
+
 import java.util.List;
 
 
@@ -13,7 +15,7 @@ import java.util.List;
 public class GooglePlace {
     @JsonProperty(value = "place_id")
     String placeId;
-    @JsonProperty("name")
+    @JsonAlias({"name", "description"})
     String name;
     @JsonProperty("geometry")
     GoogleGeometry geometry;
@@ -26,15 +28,15 @@ public class GooglePlace {
     @JsonProperty("website")
     String website;
 
-    public Place ToPlace() {
-        return new Place(
+    public WebPlace ToWebPlace() {
+        return new WebPlace(
                 name,
                 formattedAddress,
                 website,
                 formattedPhoneNumber,
                 geometry == null? 0 :  geometry.location.lat,
                 geometry == null? 0 : geometry.location.lng,
-                List.of(new ApiID(0, "GOOGLE", placeId))
+                List.of(new WebApiID(0, "GOOGLE", placeId))
                 );
     }
 }

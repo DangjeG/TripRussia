@@ -1,7 +1,7 @@
 package org.example.placesservice.API.GoogleAPI;
 
-import org.example.placesservice.API.Model.ApiID;
-import org.example.placesservice.API.Model.Place;
+import org.example.placesservice.API.Model.WebApiID;
+import org.example.placesservice.API.Model.WebPlace;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class GooglePlacesApiClientTest {
 
     @Autowired
-    GooglePlacesApiClient googlePlacesApiClient;
+    GoogleFindPlaceApiClient googlePlacesApiClient;
 
     @Test
     public void testGooglePlacesApiClientQuerySearch() {
@@ -26,6 +26,6 @@ public class GooglePlacesApiClientTest {
     }
     @Test
     public void testGooglePlacesApiClientDetails() {
-        assertEquals(googlePlacesApiClient.getById(new ApiID(0, "G", "ChIJF-zbSmSAhYARvOafjdCRszQ")).getClass(), Place.class);
+        assertEquals(googlePlacesApiClient.getById(new WebApiID(0, "G", "ChIJF-zbSmSAhYARvOafjdCRszQ")).getClass(), WebPlace.class);
     }
 }

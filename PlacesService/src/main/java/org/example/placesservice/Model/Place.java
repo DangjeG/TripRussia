@@ -1,8 +1,10 @@
-package org.example.placesservice.API.Model;
+package org.example.placesservice.Model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
-
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,5 +16,5 @@ public class Place {
     String phone;
     private double latitude;
     private double longitude;
-    private List<ApiID> places;
+    private List<ApiID> ids;
 }

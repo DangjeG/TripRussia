@@ -1,12 +1,12 @@
 package org.example.placesservice.API.GoogleAPI;
 
 
-import lombok.extern.slf4j.Slf4j;
+
 import org.example.placesservice.API.GoogleAPI.ResponseModel.GoogleDetailsResponse;
 import org.example.placesservice.API.GoogleAPI.ResponseModel.GoogleNearbySearchResponse;
 import org.example.placesservice.API.GoogleAPI.ResponseModel.GooglePlace;
 import org.example.placesservice.API.GoogleAPI.ResponseModel.GoogleQueryAutocompleteResponse;
-import org.example.placesservice.API.IPlacesAPIClient;
+import org.example.placesservice.API.IFindPlaceAPIClient;
 import org.example.placesservice.API.Model.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-@Slf4j
+
 @Service
-public class GooglePlacesApiClient implements IPlacesAPIClient {
+public class GoogleFindPlaceApiClient implements IFindPlaceAPIClient {
 
     @Value("${google.api.key}")
     private String apiKey;
@@ -26,12 +26,12 @@ public class GooglePlacesApiClient implements IPlacesAPIClient {
 
     private final WebClient webClient;
 
-    public GooglePlacesApiClient(@Qualifier("googleWebClient") WebClient webClient) {
+    public GoogleFindPlaceApiClient(@Qualifier("googleWebClient") WebClient webClient) {
         this.webClient = webClient;
     }
 
     @Override
-    public List<Place> getByQuery(String query) {
+    public List<WebPlace> getByQuery(String query) {
         GoogleQueryAutocompleteResponse response = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .pathSegment(placesServiceUrl, "queryautocomplete", "json")
@@ -46,7 +46,7 @@ public class GooglePlacesApiClient implements IPlacesAPIClient {
         if (response == null) return List.of();
 
         if (Objects.equals(response.getStatus(), "OK")) {
-            return Stream.of(response.getPredictions()).map(GooglePlace::ToPlace).toList();
+            return Stream.of(response.getPredictions()).map(GooglePlace::ToWebPlace).toList();
         } else {
             System.out.println(response.getErrorMessage());
             return List.of();
@@ -54,7 +54,7 @@ public class GooglePlacesApiClient implements IPlacesAPIClient {
     }
 
     @Override
-    public List<Place> getNearby(double latitude, double longitude, double radius, String type) {
+    public List<WebPlace> getNearby(double latitude, double longitude, double radius, String type) {
         GoogleNearbySearchResponse response = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .pathSegment(placesServiceUrl, "nearbysearch", "json")
@@ -69,7 +69,7 @@ public class GooglePlacesApiClient implements IPlacesAPIClient {
         if (response == null) return List.of();
 
         if (Objects.equals(response.getStatus(), "OK")) {
-            return Stream.of(response.getResults()).map(GooglePlace::ToPlace).toList();
+            return Stream.of(response.getResults()).map(GooglePlace::ToWebPlace).toList();
         } else {
             System.out.println(response.getErrorMessage());
             return List.of();
@@ -77,11 +77,11 @@ public class GooglePlacesApiClient implements IPlacesAPIClient {
     }
 
     @Override
-    public Place getById(ApiID id) {
+    public WebPlace getById(WebApiID id) {
         GoogleDetailsResponse response = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .pathSegment(placesServiceUrl, "details", "json")
-                        .queryParam("place_id", id.getPlace_id())
+                        .queryParam("place_id", id.getSource_id())
                         .queryParam("fields", "place_id,formatted_address,formatted_phone_number,website,name,rating,geometry")
                         .queryParam("language", "ru")
                         .queryParam("key", apiKey)
@@ -91,7 +91,7 @@ public class GooglePlacesApiClient implements IPlacesAPIClient {
         if (response == null) return null;
 
         if (Objects.equals(response.getStatus(), "OK")) {
-            return response.getResult().ToPlace();
+            return response.getResult().ToWebPlace();
         } else {
             System.out.println(response.getErrorMessage());
             return null;
