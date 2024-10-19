@@ -8,6 +8,8 @@ import lombok.Getter;
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GoogleNearbySearchResponse {
+    @JsonProperty("error_message")
+    private String errorMessage;
     @JsonProperty("results")
     private GooglePlace[] results;
     @JsonProperty("status")

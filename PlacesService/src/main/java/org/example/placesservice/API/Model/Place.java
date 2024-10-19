@@ -7,7 +7,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
 public class Place {
     String name;
     String address;

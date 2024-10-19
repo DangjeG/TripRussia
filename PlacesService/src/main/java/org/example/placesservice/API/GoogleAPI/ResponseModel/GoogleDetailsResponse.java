@@ -7,6 +7,8 @@ import lombok.Getter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 public class GoogleDetailsResponse {
+    @JsonProperty("error_message")
+    private String errorMessage;
     @JsonProperty("result")
     private GooglePlace result;
     @JsonProperty("status")

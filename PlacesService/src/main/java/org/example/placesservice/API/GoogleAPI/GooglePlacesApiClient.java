@@ -1,6 +1,7 @@
 package org.example.placesservice.API.GoogleAPI;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.placesservice.API.GoogleAPI.ResponseModel.GoogleDetailsResponse;
 import org.example.placesservice.API.GoogleAPI.ResponseModel.GoogleNearbySearchResponse;
 import org.example.placesservice.API.GoogleAPI.ResponseModel.GooglePlace;
@@ -10,12 +11,11 @@ import org.example.placesservice.API.Model.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 public class GooglePlacesApiClient implements IPlacesAPIClient {
 
@@ -39,12 +39,18 @@ public class GooglePlacesApiClient implements IPlacesAPIClient {
                         .queryParam("language", "ru")
                         .queryParam("key", apiKey)
                         .build())
-                .retrieve().bodyToMono(GoogleQueryAutocompleteResponse.class).block();
+                .retrieve().
+                bodyToMono(GoogleQueryAutocompleteResponse.class)
+                .block();
 
-        assert response != null;
-        return Objects.equals(response.getStatus(), "OK")
-                ? Stream.of(response.getPredictions()).map(GooglePlace::ToPlace).toList()
-                : List.of();
+        if (response == null) return List.of();
+
+        if (Objects.equals(response.getStatus(), "OK")) {
+            return Stream.of(response.getPredictions()).map(GooglePlace::ToPlace).toList();
+        } else {
+            System.out.println(response.getErrorMessage());
+            return List.of();
+        }
     }
 
     @Override
@@ -60,10 +66,14 @@ public class GooglePlacesApiClient implements IPlacesAPIClient {
                         .build())
                 .retrieve().bodyToMono(GoogleNearbySearchResponse.class).block();
 
-        assert response != null;
-        return Objects.equals(response.getStatus(), "OK")
-                ? Stream.of(response.getResults()).map(GooglePlace::ToPlace).toList()
-                : List.of();
+        if (response == null) return List.of();
+
+        if (Objects.equals(response.getStatus(), "OK")) {
+            return Stream.of(response.getResults()).map(GooglePlace::ToPlace).toList();
+        } else {
+            System.out.println(response.getErrorMessage());
+            return List.of();
+        }
     }
 
     @Override
@@ -78,9 +88,13 @@ public class GooglePlacesApiClient implements IPlacesAPIClient {
                         .build())
                 .retrieve().bodyToMono(GoogleDetailsResponse.class).block();
 
-        assert response != null;
-        return Objects.equals(response.getStatus(), "OK")
-                ? response.getResult().ToPlace()
-                : new Place();
+        if (response == null) return null;
+
+        if (Objects.equals(response.getStatus(), "OK")) {
+            return response.getResult().ToPlace();
+        } else {
+            System.out.println(response.getErrorMessage());
+            return null;
+        }
     }
 }

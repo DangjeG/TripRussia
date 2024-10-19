@@ -7,6 +7,8 @@ import lombok.Getter;
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GoogleQueryAutocompleteResponse {
+    @JsonProperty("error_message")
+    private String errorMessage;
     @JsonProperty("predictions")
     private GooglePlace[] predictions;
     @JsonProperty("status")
